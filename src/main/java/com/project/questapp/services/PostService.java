@@ -27,12 +27,12 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public Post getOnePost(Long postId) {
+    public Post getOnePostById(Long postId) {
         return postRepository.findById(postId).orElse(null);
     }
 
     public Post createOnePost(PostCreateRequest newPostRequest) {
-        User user = userService.getOneUser(newPostRequest.getUserId());
+        User user = userService.getOneUserById(newPostRequest.getUserId());
         if (user == null)
             return null;
         Post toSave = new Post();
