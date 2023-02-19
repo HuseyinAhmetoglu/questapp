@@ -5,26 +5,42 @@ import com.project.questapp.entities.User;
 import com.project.questapp.repos.PostRepository;
 import com.project.questapp.requests.PostCreateRequest;
 import com.project.questapp.requests.PostUpdateRequest;
+import com.project.questapp.responses.LikeResponse;
+import com.project.questapp.responses.PostResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
     private PostRepository postRepository;
     private UserService userService;
+    private LikeService likeService;
 
     public PostService(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
         this.userService = userService;
     }
 
-    public List<Post> getAllPosts(Optional<Long> userId) {
+    @Autowired
+    public void setLikeService(LikeService likeService) {
+        this.likeService = likeService;
+    }
+
+    public List<PostResponse> getAllPosts(Optional<Long> userId) {
+        List<Post> list;
         if (userId.isPresent()) {
-            return postRepository.findByUserId(userId.get());
+            list = postRepository.findByUserId(userId.get());
+        } else {
+            list = postRepository.findAll();
         }
-        return postRepository.findAll();
+        return list.stream().map(p -> {
+            List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(p.getId()));
+            return new PostResponse(p, likes);
+        }).collect(Collectors.toList());
     }
 
     public Post getOnePostById(Long postId) {
@@ -33,8 +49,7 @@ public class PostService {
 
     public Post createOnePost(PostCreateRequest newPostRequest) {
         User user = userService.getOneUserById(newPostRequest.getUserId());
-        if (user == null)
-            return null;
+        if (user == null) return null;
         Post toSave = new Post();
         toSave.setId(newPostRequest.getId());
         toSave.setText(newPostRequest.getText());
