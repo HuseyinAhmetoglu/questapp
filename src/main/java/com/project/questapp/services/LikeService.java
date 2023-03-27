@@ -6,6 +6,7 @@ import com.project.questapp.entities.User;
 import com.project.questapp.repos.LikeRepository;
 import com.project.questapp.requests.LikeCreateRequest;
 import com.project.questapp.responses.LikeResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,18 +14,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class LikeService {
-    private LikeRepository likeRepository;
-    private UserService userService;
-    private PostService postService;
-
-    public LikeService(LikeRepository likeRepository, UserService userService, PostService postService) {
-        this.likeRepository = likeRepository;
-        this.userService = userService;
-        this.postService = postService;
-    }
+    private final LikeRepository likeRepository;
+    private final UserService userService;
+    private final PostService postService;
 
     public List<LikeResponse> getAllLikesWithParam(Optional<Long> userId, Optional<Long> postId) {
+
         List<Like> list;
         if (userId.isPresent() && postId.isPresent()) {
             list = likeRepository.findByUserIdAndPostId(userId.get(), postId.get());
@@ -40,6 +37,7 @@ public class LikeService {
     }
 
     public Like createOneLike(LikeCreateRequest likeCreateRequest) {
+
         User user = userService.getOneUserById(likeCreateRequest.getUserId());
         Post post = postService.getOnePostById(likeCreateRequest.getPostId());
         if (user != null && post != null) {
@@ -53,10 +51,12 @@ public class LikeService {
     }
 
     public Like getOneLikeById(Long likeId) {
+
         return likeRepository.findById(likeId).orElse(null);
     }
 
     public void deleteOneLike(Long likeId) {
+
         likeRepository.deleteById(likeId);
     }
 }

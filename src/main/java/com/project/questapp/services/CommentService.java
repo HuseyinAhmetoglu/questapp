@@ -6,25 +6,23 @@ import com.project.questapp.entities.User;
 import com.project.questapp.repos.CommentRepository;
 import com.project.questapp.requests.CommentCreateRequest;
 import com.project.questapp.requests.CommentUpdateRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
 
-    private CommentRepository commentRepository;
-    private UserService userService;
-    private PostService postService;
+    private final CommentRepository commentRepository;
+    private final UserService userService;
+    private final PostService postService;
 
-    public CommentService(CommentRepository commentRepository, UserService userService, PostService postService) {
-        this.commentRepository = commentRepository;
-        this.userService = userService;
-        this.postService = postService;
-    }
 
     public List<Comment> getAllCommentsWithParam(Optional<Long> userId, Optional<Long> postId) {
+
         if (userId.isPresent() && postId.isPresent()) {
             return commentRepository.findByUserIdAndPostId(userId.get(), postId.get());
         } else if (userId.isPresent()) {
@@ -38,10 +36,12 @@ public class CommentService {
 
 
     public Comment getOneCommentById(Long commentId) {
+
         return commentRepository.findById(commentId).orElse(null);
     }
 
     public Comment createOneComment(CommentCreateRequest commentCreateRequest) {
+
         User user = userService.getOneUserById(commentCreateRequest.getUserId());
         Post post = postService.getOnePostById(commentCreateRequest.getPostId());
         if (user != null && post != null) {
@@ -57,6 +57,7 @@ public class CommentService {
     }
 
     public Comment updateOneComment(Long commentId, CommentUpdateRequest commentUpdateRequest) {
+
         Optional<Comment> comment = commentRepository.findById(commentId);
         if (comment.isPresent()) {
             Comment commentToUpdate = comment.get();
@@ -67,6 +68,7 @@ public class CommentService {
     }
 
     public void deleteOneComment(Long commentId) {
+
         commentRepository.deleteById(commentId);
     }
 }
