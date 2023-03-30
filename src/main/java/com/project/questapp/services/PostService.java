@@ -10,6 +10,7 @@ import com.project.questapp.responses.PostResponse;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,16 +27,6 @@ public class PostService {
         this.userService = userService;
         this.likeService = likeService;
     }
-
-//    public PostService(PostRepository postRepository, UserService userService) {
-//        this.postRepository = postRepository;
-//        this.userService = userService;
-//    }
-//
-//    @Autowired
-//    public void setLikeService(LikeService likeService) {
-//        this.likeService = likeService;
-//    }
 
     public List<PostResponse> getAllPosts(Optional<Long> userId) {
         List<Post> list;
@@ -62,6 +53,7 @@ public class PostService {
         toSave.setId(newPostRequest.getId());
         toSave.setText(newPostRequest.getText());
         toSave.setTitle(newPostRequest.getTitle());
+        toSave.setCreateDate(new Date());
         toSave.setUser(user);
         return postRepository.save(toSave);
     }

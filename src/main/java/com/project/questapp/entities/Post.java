@@ -5,6 +5,8 @@ import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "post")
 @Data
@@ -21,4 +23,7 @@ public class Post {
     @Lob
     @Column(columnDefinition = "text") // hibernate stringi text olarak algılaması için
     private String text;
+
+    @Temporal(TemporalType.DATE)
+    private Date createDate;
 }

@@ -6,6 +6,7 @@ import com.project.questapp.services.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -73,10 +74,10 @@ public class SecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(handler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests()
-//                .requestMatchers(HttpMethod.GET, "/posts")
-//                .permitAll()
-//                .requestMatchers(HttpMethod.GET, "/comments")
-//                .permitAll()
+                .requestMatchers(HttpMethod.GET, "/posts")
+                .permitAll()
+                .requestMatchers(HttpMethod.GET, "/comments")
+                .permitAll()
                 .requestMatchers("/auth/**")
                 .permitAll()
                 .anyRequest().authenticated();
