@@ -19,14 +19,13 @@ public class UserService {
     }
 
     public User createUser(User newUser) {
-
         return userRepository.save(newUser);
     }
 
     public User getOneUserById(Long userId) {
-
         return userRepository.findById(userId).orElse(null);
     }
+
 
     public User updateOneUser(Long userId, User newUser) {
 
@@ -35,10 +34,13 @@ public class UserService {
             User foundUser = user.get();
             foundUser.setUserName(newUser.getUserName());
             foundUser.setPassword(newUser.getPassword());
+            foundUser.setAvatar(newUser.getAvatar());
             userRepository.save(foundUser);
             return foundUser;
+        } else {
+            return null;
         }
-        return null;
+
     }
 
     public void deleteOneUser(Long userId) {

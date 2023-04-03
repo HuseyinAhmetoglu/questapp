@@ -1,6 +1,7 @@
 package com.project.questapp.controllers;
 
 import com.project.questapp.entities.User;
+import com.project.questapp.responses.UserResponse;
 import com.project.questapp.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +27,9 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getOneUserById(@PathVariable Long userId) {
+    public UserResponse getOneUserById(@PathVariable Long userId) {
         //custom exception
-        return userService.getOneUserById(userId);
+        return new UserResponse(userService.getOneUserById(userId));
     }
 
     @PutMapping("/{userId}")
