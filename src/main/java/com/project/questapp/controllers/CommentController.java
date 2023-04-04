@@ -3,6 +3,7 @@ package com.project.questapp.controllers;
 import com.project.questapp.entities.Comment;
 import com.project.questapp.requests.CommentCreateRequest;
 import com.project.questapp.requests.CommentUpdateRequest;
+import com.project.questapp.responses.CommentResponse;
 import com.project.questapp.services.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping
-    public List<Comment> getAllCommentsWithParam(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId) {
+    public List<CommentResponse> getAllCommentsWithParam(@RequestParam Optional<Long> userId, @RequestParam Optional<Long> postId) {
 
         return commentService.getAllCommentsWithParam(userId, postId);
     }
