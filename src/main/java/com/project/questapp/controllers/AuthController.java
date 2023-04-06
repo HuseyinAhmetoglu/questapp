@@ -1,6 +1,8 @@
 package com.project.questapp.controllers;
 
+import com.project.questapp.entities.RefreshToken;
 import com.project.questapp.entities.User;
+import com.project.questapp.requests.RefreshRequest;
 import com.project.questapp.requests.UserRequest;
 import com.project.questapp.responses.AuthResponse;
 import com.project.questapp.security.JwtTokenProvider;
@@ -72,6 +74,26 @@ public class AuthController {
         authResponse.setRefreshToken(refreshTokenService.createRefreshToken(user));
         authResponse.setUserId(user.getId());
         return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@RequestBody RefreshRequest refreshRequest) {
+        AuthResponse authResponse = new AuthResponse();
+        RefreshToken refreshToken = refreshTokenService.getByUser(refreshRequest.getUserId());
+        if(refreshToken.getToken().equals(refreshRequest.getRefreshToken()) &&
+                !refreshTokenService.isRefreshExpired(refreshToken)) {
+
+            User user = refreshToken.getUser();
+            String jwtToken = jwtTokenProvider.generateJwtTokenByUserId(user.getId());
+            authResponse.setMessage("token successfully refreshed.");
+            authResponse.setAccessToken("Bearer " + jwtToken);
+            authResponse.setUserId(user.getId());
+            return new ResponseEntity<>(authResponse, HttpStatus.OK);
+        } else {
+            authResponse.setMessage("refresh token is not valid.");
+            return new ResponseEntity<>(authResponse, HttpStatus.UNAUTHORIZED);
+        }
+
     }
 
 
