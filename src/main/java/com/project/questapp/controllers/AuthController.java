@@ -4,6 +4,7 @@ import com.project.questapp.entities.User;
 import com.project.questapp.requests.UserRequest;
 import com.project.questapp.responses.AuthResponse;
 import com.project.questapp.security.JwtTokenProvider;
+import com.project.questapp.services.RefreshTokenService;
 import com.project.questapp.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,8 @@ public class AuthController {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final RefreshTokenService refreshTokenService;
+
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody UserRequest loginRequest) {
@@ -40,7 +43,8 @@ public class AuthController {
         String jwtToken = jwtTokenProvider.generateJwtToken(auth);
         User user = userService.getOneUserByUserName(loginRequest.getUserName());
         AuthResponse authResponse = new AuthResponse();
-        authResponse.setMessage("Bearer " + jwtToken);
+        authResponse.setAccessToken("Bearer " + jwtToken);
+        authResponse.setRefreshToken(refreshTokenService.createRefreshToken(user));
         authResponse.setUserId(user.getId());
         return authResponse;
     }
@@ -49,7 +53,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(@RequestBody UserRequest registerRequest) {
         AuthResponse authResponse = new AuthResponse();
         if (userService.getOneUserByUserName(registerRequest.getUserName()) != null) {
-            authResponse.setMessage("Username already in use!");
+            authResponse.setMessage("Username already in use.");
             return new ResponseEntity<>(authResponse, HttpStatus.BAD_REQUEST);
         }
 
@@ -63,10 +67,11 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(auth);
         String jwtToken = jwtTokenProvider.generateJwtToken(auth);
 
-        authResponse.setMessage("Bearer " + jwtToken);
+        authResponse.setMessage("User successfully registered.");
+        authResponse.setAccessToken("Bearer " + jwtToken);
+        authResponse.setRefreshToken(refreshTokenService.createRefreshToken(user));
         authResponse.setUserId(user.getId());
         return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
-
     }
 
 
